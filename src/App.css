@@ -39,3 +39,27 @@ button {
 button:hover {
   background: #0056b3;
 }
+.navbar {
+  background: #007bff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}

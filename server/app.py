@@ -7,6 +7,7 @@ from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from models import db, Event, User
 from auth import auth_bp
+from events import events_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -26,6 +27,7 @@ jwt = JWTManager(app)
 
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(events_bp, url_prefix='/events')
 
 # Error handlers
 @app.errorhandler(404)

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function CreateEvent() {
+    const navigate = useNavigate(); // Add navigation hook
+
     // Load saved events from localStorage (or use an empty array if none exist)
     const [events, setEvents] = useState(() => {
         const savedEvents = localStorage.getItem("events");
@@ -18,19 +21,32 @@ function CreateEvent() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        const newEvents = [...events, formData]; // new array with the new event,,,taking all events and adding the new event(formData)
-
-
-        // Saves the updated events list to `localStorage` 
-        localStorage.setItem("events", JSON.stringify(newEvents));//converts new array to a string ans dtores it in local storage
-
-        setEvents(newEvents); // Update state to show updated list of events 
+        
+        const newEvent = {
+            id: Date.now(),  // Unique ID 
+            name: formData.name,
+            description: formData.description,
+            location: formData.location,
+            date: formData.date,
+            price: formData.price,
+            image: formData.image,
+        };
+    
+        const updatedEvents = [...events, newEvent];  
+        setEvents(updatedEvents);  
+        localStorage.setItem("events", JSON.stringify(updatedEvents));  
+    
         setFormData({ name: "", description: "", location: "", date: "", price: "", image: "" });
     }
-
+    function handleDelete(eventId){
+        const updatedEvents = events.filter(event => event.id != eventId);
+        setEvents(updatedEvents);
+        localStorage.setItem("events",JSON.stringify(updatedEvents))
+    }
     return (
         <div className="container">
             <h1>Create Event</h1>
+            <button onClick={() => navigate("/event-list")}>Back to Event List</button> {/* Add navigation button */}
             <form onSubmit={handleSubmit}>
                 <input type="text" name="name" placeholder="Event Name" value={formData.name} onChange={handleChange} required />
                 <textarea name="description" placeholder="Event Description" value={formData.description} onChange={handleChange} required></textarea>
@@ -53,7 +69,7 @@ function CreateEvent() {
                             <p>📅 {event.date}</p>
                             <p>💰 ${event.price}</p>
                             {event.image && <img src={event.image} alt={event.name} width="100" />}
-                            <button onClick={() => handleDelete(index)}> Delete</button>
+                            <button onClick={() => handleDelete(event.id)}> Delete</button>
                         </li>
                     ))}
                 </ul>
