@@ -1,24 +1,46 @@
 import os
 from flask import Flask, jsonify, request
-# from flask_cors import CORS
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 from models import db, Event, User
+from auth import auth_bp
 
 app = Flask(__name__)
+CORS(app)
 
+# Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://elisha:karanja@localhost/ticketi'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
- 
 
+# JWT configuration
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'your-secret-key')  # Change this in production
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+
+# Initialize extensions
 db.init_app(app)
 migrate = Migrate(app, db)
+jwt = JWTManager(app)
 
+# Register blueprints
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
+# Error handlers
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'Not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'error': 'Internal server error'}), 500
+
+# Routes
 @app.route("/events", methods=["GET"])
 def get_events():
     events = Event.query.all()
-    return jsonify([event.to_dict() for event in events])  # Fix JSON response
+    return jsonify([event.to_dict() for event in events])
 
 @app.route("/create", methods=["POST"])
 def create_event():
@@ -28,10 +50,10 @@ def create_event():
         location=data['location'],
         location_lat=data.get('location_lat'),
         location_lng=data.get('location_lng'),
-        description=data['description'],  # Add description
-        date=data['date'],                # Add date
-        price=data['price'],              # Add price
-        image=data.get('image')           # Add image
+        description=data['description'],
+        date=data['date'],
+        price=data['price'],
+        image=data.get('image')
     )
     db.session.add(new_event)
     db.session.commit()
@@ -68,6 +90,9 @@ def login_user():
    existing_user = User.query.filter_by(email = email).first()
    if not existing_user:
       return jsonify({"error": "No user with this email found."}, 401)#401 unauthorozed
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 
