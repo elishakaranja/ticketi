@@ -1,25 +1,38 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from './context/AuthContext';
+import NavBar from "./components/NavBar";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import EventList from "./pages/EventList";
 import EventDetails from "./pages/EventDetails";
 import CreateEvent from "./pages/CreateEvent";
-import "./App.css";
-import EventList from "./pages/EventList";
-import NavBar from "./components/NavBar"
-
+import ProtectedRoute from "./components/ProtectedRoute";
+import "./styles/auth.css";
 
 function App() {
   return (
-    <Router>
-      <NavBar/>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/event/:id" element={<EventDetails />} />
-        <Route path="/create-event" element={<CreateEvent/>}/>
-        <Route path="/event-list" element={<EventList/>}/>
-
-        
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="app">
+          <NavBar />
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/event-list" element={<EventList />} />
+              <Route path="/events/:id" element={<EventDetails />} />
+              <Route path="/create-event" element={
+                <ProtectedRoute>
+                  <CreateEvent />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 
