@@ -27,7 +27,48 @@ function CreateEvent() {
         setLoading(true);
         setError(null);
         setSuccess(null);
+
+        // Validate price and capacity
+        const price = parseFloat(formData.price);
+        const capacity = parseInt(formData.capacity);
+        
+        if (isNaN(price) || price < 0) {
+            setError("Please enter a valid price");
+            setLoading(false);
+            return;
+        }
+
+        if (isNaN(capacity) || capacity <= 0) {
+            setError("Please enter a valid capacity");
+            setLoading(false);
+            return;
+        }
+
+        // Format the date properly
+        const eventDate = new Date(formData.date);
+        if (isNaN(eventDate.getTime())) {
+            setError("Please enter a valid date");
+            setLoading(false);
+            return;
+        }
+
+        // Format date to match backend's expected format: YYYY-MM-DD HH:MM:SS
+        const formattedDate = eventDate.getFullYear() + '-' +
+            String(eventDate.getMonth() + 1).padStart(2, '0') + '-' +
+            String(eventDate.getDate()).padStart(2, '0') + ' ' +
+            '00:00:00';
+
         try {
+            console.log('Sending data:', {
+                name: formData.name.trim(),
+                description: formData.description.trim(),
+                location: formData.location.trim(),
+                date: formattedDate,
+                price: price,
+                capacity: capacity,
+                image: formData.image.trim() || null
+            });
+
             const response = await fetch("http://localhost:5000/events/", {
                 method: "POST",
                 headers: {
@@ -35,23 +76,27 @@ function CreateEvent() {
                     "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    name: formData.name,
-                    description: formData.description,
-                    location: formData.location,
-                    date: formData.date + " 00:00:00", // backend expects full datetime
-                    price: parseFloat(formData.price),
-                    capacity: parseInt(formData.capacity),
-                    image: formData.image
+                    name: formData.name.trim(),
+                    description: formData.description.trim(),
+                    location: formData.location.trim(),
+                    date: formattedDate,
+                    price: price,
+                    capacity: capacity,
+                    image: formData.image.trim() || null
                 })
             });
+
+            const data = await response.json();
+            
             if (!response.ok) {
-                const data = await response.json();
                 throw new Error(data.error || "Failed to create event");
             }
+            
             setSuccess("Event created successfully!");
             setTimeout(() => navigate("/event-list"), 1000);
         } catch (err) {
             setError(err.message);
+            console.error("Error creating event:", err);
         } finally {
             setLoading(false);
         }

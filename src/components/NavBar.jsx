@@ -13,6 +13,7 @@ function NavBar(){
                 {user ? (
                     <>
                         <li><Link to="/create-event">Create Event</Link></li>
+                        <li><Link to="/my-tickets">My Tickets</Link></li>
                         <li><Link to="/profile">Profile</Link></li>
                         <li><button onClick={logout}>Logout</button></li>
                     </>

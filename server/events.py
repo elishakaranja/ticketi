@@ -50,25 +50,35 @@ def get_event(event_id):
 @events_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_event():
-    current_user_id = get_jwt_identity()
-    data = request.get_json()
-
-    # Validate required fields
-    required_fields = ['name', 'location', 'description', 'date', 'price', 'capacity']
-    if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Missing required fields'}), 400
-
-    # Validate date
-    if not is_valid_date(data['date']):
-        return jsonify({'error': 'Invalid date format or date is in the past'}), 400
-
-    # Validate price and capacity
-    if not isinstance(data['price'], (int, float)) or data['price'] < 0:
-        return jsonify({'error': 'Invalid price'}), 400
-    if not isinstance(data['capacity'], int) or data['capacity'] <= 0:
-        return jsonify({'error': 'Invalid capacity'}), 400
-
     try:
+        current_user_id = get_jwt_identity()
+        data = request.get_json()
+
+        # Validate required fields
+        required_fields = ['name', 'location', 'description', 'date', 'price', 'capacity']
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+
+        # Validate date format
+        try:
+            event_date = datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
+            if event_date <= datetime.utcnow():
+                return jsonify({'error': 'Event date must be in the future'}), 400
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD HH:MM:SS'}), 400
+
+        # Validate price and capacity
+        try:
+            price = float(data['price'])
+            capacity = int(data['capacity'])
+            if price < 0:
+                return jsonify({'error': 'Price cannot be negative'}), 400
+            if capacity <= 0:
+                return jsonify({'error': 'Capacity must be greater than 0'}), 400
+        except (ValueError, TypeError):
+            return jsonify({'error': 'Invalid price or capacity value'}), 400
+
         # Create new event
         new_event = Event(
             name=data['name'],
@@ -76,9 +86,9 @@ def create_event():
             location_lat=data.get('location_lat'),
             location_lng=data.get('location_lng'),
             description=data['description'],
-            date=datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S'),
-            price=data['price'],
-            capacity=data['capacity'],
+            date=event_date,
+            price=price,
+            capacity=capacity,
             image=data.get('image'),
             user_id=current_user_id,
             status='upcoming'
@@ -89,10 +99,10 @@ def create_event():
 
         # Generate tickets for the event
         tickets = []
-        for _ in range(data['capacity']):
+        for _ in range(capacity):
             ticket = Ticket(
                 event_id=new_event.id,
-                price=data['price'],
+                price=price,
                 status='available'
             )
             tickets.append(ticket)
@@ -104,7 +114,9 @@ def create_event():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': 'Failed to create event'}), 500
+        print(f"Error creating event: {str(e)}")  # Add server-side logging
+        return jsonify({'error': f'Failed to create event: {str(e)}'}), 500
+
 # Update event 
 @events_bp.route('/<int:event_id>', methods=['PUT'])
 @jwt_required()

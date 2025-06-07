@@ -1,13 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
 db = SQLAlchemy()
 
-class User(db.Model,SerializerMixin):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key = True)
@@ -41,7 +40,7 @@ class User(db.Model,SerializerMixin):
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
-class Event(db.Model,SerializerMixin):
+class Event(db.Model):
     __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key = True)
@@ -62,7 +61,25 @@ class Event(db.Model,SerializerMixin):
     # Relationships
     tickets = db.relationship('Ticket', backref='event', lazy=True)
 
-class Ticket(db.Model, SerializerMixin):
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'location': self.location,
+            'location_lat': self.location_lat,
+            'location_lng': self.location_lng,
+            'description': self.description,
+            'date': self.date.strftime('%Y-%m-%d %H:%M:%S') if self.date else None,
+            'price': self.price,
+            'image': self.image,
+            'capacity': self.capacity,
+            'tickets_sold': self.tickets_sold,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'user_id': self.user_id
+        }
+
+class Ticket(db.Model):
     __tablename__ = 'tickets'
        
     id = db.Column(db.Integer, primary_key=True)
@@ -80,7 +97,7 @@ class Ticket(db.Model, SerializerMixin):
     # Relationships
     transactions = db.relationship('Transaction', backref='ticket', lazy=True)#Links Ticket to all its Transactions (useful for tracking resales)
 
-class Transaction(db.Model, SerializerMixin):
+class Transaction(db.Model):
     __tablename__ = 'transactions'
        
     id = db.Column(db.Integer, primary_key=True)

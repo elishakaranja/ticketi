@@ -8,6 +8,8 @@ import EventList from "./pages/EventList";
 import EventDetails from "./pages/EventDetails";
 import CreateEvent from "./pages/CreateEvent";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/Profile";
+import MyTickets from "./pages/MyTickets";
 import "./styles/auth.css";
 
 function App() {
@@ -26,6 +28,16 @@ function App() {
               <Route path="/create-event" element={
                 <ProtectedRoute>
                   <CreateEvent />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/my-tickets" element={
+                <ProtectedRoute>
+                  <MyTickets />
                 </ProtectedRoute>
               } />
             </Routes>

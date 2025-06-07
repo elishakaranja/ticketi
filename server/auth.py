@@ -91,49 +91,36 @@ def login():
         'user': user.to_dict(),
         'access_token': access_token
     }), 200
-
+#PROFILE ROUTES
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
-        
     return jsonify(user.to_dict()), 200
 
 @auth_bp.route('/profile', methods=['PUT'])
 @jwt_required()
 def update_profile():
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
-        
     data = request.get_json()
-    
-    # Update username if provided
-    if 'username' in data:
-        if len(data['username']) < 3:
-            return jsonify({'error': 'Username must be at least 3 characters long'}), 400
-        if User.query.filter_by(username=data['username']).first() and data['username'] != user.username:
-            return jsonify({'error': 'Username already taken'}), 409
+    updated = False
+    if 'username' in data and data['username']:
         user.username = data['username']
-    
-    # Update password if provided
-    if 'password' in data:
-        if len(data['password']) < 6:
-            return jsonify({'error': 'Password must be at least 6 characters long'}), 400
-        user.password = data['password']
-    
-    try:
+        updated = True
+    if 'email' in data and data['email']:
+        # Check for email uniqueness
+        if User.query.filter(User.email == data['email'], User.id != user_id).first():
+            return jsonify({'error': 'Email already in use'}), 400
+        user.email = data['email']
+        updated = True
+    if updated:
         db.session.commit()
-        return jsonify({
-            'message': 'Profile updated successfully',
-            'user': user.to_dict()
-        }), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'Profile update failed'}), 500 
+        return jsonify(user.to_dict()), 200
+    else:
+        return jsonify({'error': 'No valid fields to update'}), 400 

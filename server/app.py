@@ -8,6 +8,7 @@ from datetime import timedelta
 from models import db, Event, User
 from auth import auth_bp
 from events import events_bp
+from tickets import tickets_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -28,6 +29,7 @@ jwt = JWTManager(app)
 # Register blueprints
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(events_bp, url_prefix='/events')
+app.register_blueprint(tickets_bp, url_prefix='/tickets')
 
 # Error handlers
 @app.errorhandler(404)
@@ -38,61 +40,7 @@ def not_found(error):
 def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
-# Routes
-@app.route("/events", methods=["GET"])
-def get_events():
-    events = Event.query.all()
-    return jsonify([event.to_dict() for event in events])
-
-@app.route("/create", methods=["POST"])
-def create_event():
-    data = request.get_json()
-    new_event = Event(
-        name=data['name'],
-        location=data['location'],
-        location_lat=data.get('location_lat'),
-        location_lng=data.get('location_lng'),
-        description=data['description'],
-        date=data['date'],
-        price=data['price'],
-        image=data.get('image')
-    )
-    db.session.add(new_event)
-    db.session.commit()
-    return jsonify(new_event.to_dict()), 201
-
-@app.route("/register", methods = ["POST"])
-def register_user():
-   data = request.get_json()
-     #get username and email from the request data
-   username = data.get("username")#.get() returns None while data["email"] returns a key error which may break the app so this enables us to handle the error gracefully
-   email = data.get("email")
-   #validations
-   if not username or not email:
-      return jsonify({"error": "username and emil are required"}, 400)
-   # Check if email is already taken
-   existing_user = User.query.filter_by(email=email).first()
-   if existing_user:
-      return jsonify({"error": "User with this email already exists."}, 409)#409 the client was not able to successfully create or update a resource due to a conflict with the current state of the resource
-   new_user = User(username = username, email = email)
-
-   db.session.add(new_user)
-   db.session.commit()
-
-   return jsonify(new_user.to_dict()),201
-   
-@app.route("/login", methods =["POST"])
-def login_user():
-   data = request.get_json()
-   #get email&username
-   username = data.get("username")
-   email = data.get("email")
-   if not username or not email:
-      return jsonify({"error": "username and emil are required"}, 400)
-   existing_user = User.query.filter_by(email = email).first()
-   if not existing_user:
-      return jsonify({"error": "No user with this email found."}, 401)#401 unauthorozed
-
+# Remove duplicate routes since they are handled in blueprints
 if __name__ == '__main__':
     app.run(debug=True)
 
