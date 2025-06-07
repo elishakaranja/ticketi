@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import EventCard from '../components/EventCard';
 
 function EventList() {
     const [events, setEvents] = useState([]);
@@ -89,72 +90,66 @@ function EventList() {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-red-600 text-center">
+                    <h2 className="text-2xl font-bold mb-2">Error</h2>
+                    <p>{error}</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="container">
-            <h1>Event List</h1>
-            <button onClick={() => navigate("/create-event")}>Create New Event</button>
-            {loading ? (
-                <p>Loading events...</p>
-            ) : error ? (
-                <p style={{ color: "red" }}>{error}</p>
-            ) : events.length === 0 ? (
-                <p>No events found.</p>
-            ) : (
-                <ul>
-                    {events.map(event => (
-                        <li key={event.id} className="card mb-2">
-                            <h3><Link to={`/events/${event.id}`}>{event.name}</Link></h3>
-                            <p>{event.description}</p>
-                            <p>📍 {event.location}</p>
-                            <p>📅 {event.date}</p>
-                            <p>💰 ${event.price}</p>
-                            <p>🎟️ Available Tickets: {event.availableTickets}</p>
-                            {event.image && <img src={event.image} alt={event.name} width="100" />}
-                            
-                            <div className="button-group">
-                                <button onClick={() => navigate(`/events/${event.id}`)}>
-                                    View Details
-                                </button>
-                                
-                                {token && event.availableTickets > 0 && (
-                                    <button 
-                                        onClick={() => handleBuyTicket(event.id)}
-                                        disabled={ticketStatus[event.id]?.success}
-                                    >
-                                        Buy Ticket
-                                    </button>
-                                )}
-                                
-                                {token && event.availableTickets === 0 && (
-                                    <span className="sold-out">Sold Out</span>
-                                )}
-                                
-                                {!token && (
-                                    <span className="login-prompt">Login to buy tickets</span>
-                                )}
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+                Upcoming Events
+            </h1>
+            
+            {/* Search and Filter Section */}
+            <div className="mb-8 flex flex-col md:flex-row gap-4">
+                <input
+                    type="text"
+                    placeholder="Search events..."
+                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                             dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 
+                             focus:border-transparent"
+                />
+                <select className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                                dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Categories</option>
+                    <option value="music">Music</option>
+                    <option value="sports">Sports</option>
+                    <option value="theater">Theater</option>
+                </select>
+            </div>
+
+            {/* Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {events.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                ))}
                             </div>
 
-                            {ticketStatus[event.id] && (
-                                <p className={ticketStatus[event.id].success ? "success" : "error"}>
-                                    {ticketStatus[event.id].message}
-                                </p>
-                            )}
-
-                            {user && event.user_id === user.id && (
-                                <button 
-                                    onClick={() => handleDelete(event.id)} 
-                                    style={{ marginTop: "0.5rem", background: "var(--error-color)" }}
-                                >
-                                    Delete
-                                </button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
+            {/* Empty State */}
+            {events.length === 0 && (
+                <div className="text-center py-12">
+                    <h3 className="text-xl text-gray-600 dark:text-gray-400">
+                        No events found
+                    </h3>
+                </div>
             )}
-            {deleteError && <p style={{ color: "red" }}>{deleteError}</p>}
         </div>
     );
-}
+};
 
 export default EventList;

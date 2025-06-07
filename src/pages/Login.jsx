@@ -24,10 +24,10 @@ function Login() {
     return (
         <div className="auth-container">
             <h2>Login</h2>
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="text-red-600 text-sm mt-1">{error}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="email">Email:</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">Email:</label>
                     <input
                         type="email"
                         id="email"
@@ -37,7 +37,7 @@ function Login() {
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="password">Password:</label>
+                    <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">Password:</label>
                     <input
                         type="password"
                         id="password"
