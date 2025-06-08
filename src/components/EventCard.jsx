@@ -4,23 +4,23 @@ import Button from './Button';
 
 const EventCard = ({ event }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-soft overflow-hidden transition-all duration-300 hover:shadow-medium hover:translate-y-[-4px] border border-primary-200">
+    <div className="bg-surface-100 rounded-3xl shadow-futuristic overflow-hidden transition-all duration-300 hover:shadow-medium hover:scale-[1.025] border border-primary-100">
       <div className="relative">
         <img 
           src={event.image_url} 
           alt={event.title}
-          className="w-full h-56 object-cover"
+          className="w-full h-56 object-cover bg-surface-300"
         />
-        <div className="absolute top-4 right-4 bg-accent-300 text-neutral-800 px-4 py-1.5 rounded-full text-sm font-medium">
+        <div className="absolute top-4 right-4 bg-accent-100 text-primary-800 px-4 py-1.5 rounded-full text-base font-semibold shadow-soft">
           ${event.price}
         </div>
       </div>
       <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-sm font-medium px-3 py-1 rounded-full bg-primary-200 text-neutral-700">
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-primary-200 text-primary-800 tracking-wide uppercase">
             {event.category || 'Event'}
           </span>
-          <span className="text-sm text-neutral-500">
+          <span className="text-xs text-neutral-500">
             {new Date(event.date).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -28,10 +28,10 @@ const EventCard = ({ event }) => {
             })}
           </span>
         </div>
-        <h3 className="font-display text-xl font-semibold text-neutral-800 mb-3">
+        <h3 className="font-display text-2xl font-bold text-primary-900 mb-2 truncate">
           {event.title}
         </h3>
-        <p className="text-neutral-600 text-base mb-6 line-clamp-2">
+        <p className="text-neutral-700 text-base mb-6 line-clamp-2">
           {event.description}
         </p>
         <div className="flex items-center justify-between">
@@ -45,7 +45,7 @@ const EventCard = ({ event }) => {
           </div>
           <Link 
             to={`/events/${event.id}`}
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-primary-200 text-primary-600 hover:bg-primary-300 transition-colors duration-200 font-medium text-sm"
+            className="inline-flex items-center px-5 py-2 rounded-2xl bg-primary-500 text-white hover:bg-primary-600 transition-colors duration-200 font-semibold text-sm shadow-soft"
           >
             View Details
             <svg className="w-4 h-4 ml-2" viewBox="0 0 20 20" fill="currentColor">

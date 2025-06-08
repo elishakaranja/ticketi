@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -5,46 +7,68 @@ module.exports = {
     "./index.html",
   ],
   theme: {
-    colors: {
-      'primary': {
-        50: '#F9F8F6',
-        100: '#F2F2F2',
-        200: '#EAE4D5',
-        300: '#B6B09F',
-        400: '#A39D8C',
-        500: '#8C8575',
-        600: '#000000',
+    extend: {
+      colors: {
+        primary: {
+          50: '#f5f3ff',   // lightest
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',  // main purple
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',  // darkest
+        },
+        accent: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6', // teal accent
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+        },
+        surface: {
+          100: '#ffffff',
+          200: '#f8fafc',
+          300: '#f1f5f9',
+        },
+        neutral: {
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
+        },
+        error: colors.rose,
+        success: colors.emerald,
+        warning: colors.amber,
+        info: colors.sky,
       },
-      'accent': {
-        100: '#FFF8E7',
-        200: '#FFE5B4',
-        300: '#FFD27D',
-        400: '#FFC145',
+      fontFamily: {
+        'sans': ['Poppins', 'system-ui', 'sans-serif'],
+        'display': ['Playfair Display', 'serif'],
       },
-      'neutral': {
-        50: '#FAFAFA',
-        100: '#F5F5F5',
-        200: '#E5E5E5',
-        300: '#D4D4D4',
-        400: '#A3A3A3',
-        500: '#737373',
-        600: '#525252',
-        700: '#404040',
-        800: '#262626',
-        900: '#171717',
-      }
-    },
-    fontFamily: {
-      'sans': ['Poppins', 'system-ui', 'sans-serif'],
-      'display': ['Playfair Display', 'serif'],
-    },
-    boxShadow: {
-      'soft': '0 2px 15px rgba(0, 0, 0, 0.05)',
-      'medium': '0 4px 20px rgba(0, 0, 0, 0.08)',
-    },
-    borderRadius: {
-      'xl': '1rem',
-      '2xl': '1.5rem',
+      boxShadow: {
+        'soft': '0 2px 15px rgba(80, 0, 200, 0.07)',
+        'medium': '0 4px 24px rgba(80, 0, 200, 0.10)',
+        'futuristic': '0 8px 32px 0 rgba(80, 0, 200, 0.15), 0 1.5px 4px 0 rgba(0,0,0,0.04)',
+      },
+      borderRadius: {
+        'xl': '1rem',
+        '2xl': '1.5rem',
+        '3xl': '2rem',
+      },
     },
   },
   plugins: [],
