@@ -1,22 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Import fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
-@layer base {
-  html {
-    -webkit-tap-highlight-color: transparent;
-  }
-}
-
-@layer utilities {
-  .text-shadow {
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-}
-
+/* Basic Styles */
 * {
   margin: 0;
   padding: 0;
@@ -24,6 +8,9 @@
 }
 
 body {
+  background-color: #f0f2f5; /* A light grey background */
+  color: #333;
+  font-family: 'Poppins', sans-serif;
   min-height: 100vh;
 }
 

@@ -82,7 +82,7 @@ function EventDetails() {
   if (!event) return <div>Event not found.</div>;
 
   return (
-    <div className="container">
+    <div >
       <h1>{event.name}</h1>
       <p>Date: {event.date}</p>
       <p>Location: {event.location}</p>
@@ -98,9 +98,9 @@ function EventDetails() {
       {token && available === 0 && <p>Sold out!</p>}
       {!token && <p>Please log in to buy a ticket.</p>}
 
-      <div className="tickets-section">
+      <div >
         <h2>Available Tickets</h2>
-        <div className="original-tickets">
+        <div >
           <h3>Original Price Tickets</h3>
           <p>Available: {available}</p>
           {error && <p style={{ color: "red" }}>{error}</p>}
@@ -115,11 +115,11 @@ function EventDetails() {
         </div>
 
         {resaleTickets.length > 0 && (
-          <div className="resale-tickets">
+          <div >
             <h3>Resale Tickets</h3>
-            <div className="resale-list">
+            <div >
               {resaleTickets.map(ticket => (
-                <div key={ticket.ticket_id} className="resale-ticket-card">
+                <div key={ticket.ticket_id} >
                   <p>Resale Price: ${ticket.resale_price}</p>
                   <p>Seller: {ticket.seller}</p>
                   {token && (

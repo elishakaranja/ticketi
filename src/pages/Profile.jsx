@@ -60,7 +60,7 @@ function Profile() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="container">
+    <div >
       <h1>User Profile</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
@@ -106,4 +106,4 @@ function Profile() {
   );
 }
 
-export default Profile; 
+export default Profile;

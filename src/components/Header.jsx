@@ -18,29 +18,25 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-primary-200 border-b border-primary-300">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+    <header >
+      <div >
+        <div >
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-4">
-            <span className="text-4xl">🎫</span>
-            <span className="font-display text-3xl font-bold bg-gradient-to-r from-primary-600 via-accent-400 to-primary-600 bg-clip-text text-transparent">
+          <Link to="/">
+            <span >🎫</span>
+            <span >
               Ticketi
             </span>
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-12">
+          <nav >
             {navLinks.map((link) => (
               (!link.protected || (link.protected && user)) && (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`text-base font-medium transition-colors duration-200 ${
-                    isActive(link.path)
-                      ? 'text-primary-600'
-                      : 'text-neutral-700 hover:text-primary-500'
-                  }`}
+                  
                 >
                   {link.label}
                 </Link>
@@ -49,16 +45,16 @@ const Header = () => {
           </nav>
 
           {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div >
             {user ? (
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-accent-300 flex items-center justify-center">
-                    <span className="text-base font-medium text-neutral-800">
+              <div >
+                <div >
+                  <div >
+                    <span >
                       {user.username.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-base font-medium text-neutral-700">
+                  <span >
                     {user.username}
                   </span>
                 </div>
@@ -67,7 +63,7 @@ const Header = () => {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div >
                 <Link to="/login">
                   <Button variant="outline" size="md">
                     Sign In
@@ -83,8 +79,8 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden p-3 rounded-lg text-neutral-700 hover:text-primary-600 hover:bg-primary-300">
-            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button >
+            <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -94,4 +90,4 @@ const Header = () => {
   );
 };
 
-export default Header; 
+export default Header;

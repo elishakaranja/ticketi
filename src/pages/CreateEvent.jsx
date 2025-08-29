@@ -103,17 +103,17 @@ function CreateEvent() {
     }
 
     return (
-        <div className="container">
+        <div >
             <h1>Create Event</h1>
             <button onClick={() => navigate("/event-list")}>Back to Event List</button>
             <form onSubmit={handleSubmit}>
-                <input type="text" name="name" placeholder="Event Name" value={formData.name} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
-                <textarea name="description" placeholder="Event Description" value={formData.description} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
-                <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
-                <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
-                <input type="number" name="price" placeholder="Ticket Price" value={formData.price} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
-                <input type="number" name="capacity" placeholder="Capacity" value={formData.capacity} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
-                <input type="text" name="image" placeholder="Image URL" value={formData.image} onChange={handleChange} className="w-full px-4 py-2 rounded-xl border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-300 bg-white text-neutral-800 placeholder-neutral-400" />
+                <input type="text" name="name" placeholder="Event Name" value={formData.name} onChange={handleChange} required />
+                <textarea name="description" placeholder="Event Description" value={formData.description} onChange={handleChange} required />
+                <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} required />
+                <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+                <input type="number" name="price" placeholder="Ticket Price" value={formData.price} onChange={handleChange} required />
+                <input type="number" name="capacity" placeholder="Capacity" value={formData.capacity} onChange={handleChange} required />
+                <input type="text" name="image" placeholder="Image URL" value={formData.image} onChange={handleChange} />
                 <button type="submit" disabled={loading}>{loading ? "Creating..." : "Create Event"}</button>
             </form>
             {error && <p style={{ color: "red" }}>{error}</p>}

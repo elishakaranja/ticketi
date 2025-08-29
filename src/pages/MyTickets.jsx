@@ -80,11 +80,11 @@ function MyTickets() {
     if (!tickets.length) return <div>You don't have any tickets yet.</div>;
 
     return (
-        <div className="container">
+        <div >
             <h1>My Tickets</h1>
-            <div className="ticket-list">
+            <div >
                 {tickets.map(ticket => (
-                    <div key={ticket.ticket_id} className="card mb-2">
+                    <div key={ticket.ticket_id} >
                         <h3>{ticket.event.name}</h3>
                         <p>Date: {ticket.event.date}</p>
                         <p>Location: {ticket.event.location}</p>
@@ -117,7 +117,7 @@ function MyTickets() {
                             </div>
                         )}
                         {resaleStatus[ticket.ticket_id] && (
-                            <p className={resaleStatus[ticket.ticket_id].includes("Error") ? "error" : "success"}>
+                            <p >
                                 {resaleStatus[ticket.ticket_id]}
                             </p>
                         )}
@@ -128,4 +128,4 @@ function MyTickets() {
     );
 }
 
-export default MyTickets; 
+export default MyTickets;

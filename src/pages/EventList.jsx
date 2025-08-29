@@ -92,17 +92,17 @@ function EventList() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            <div >
+                <div ></div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-red-600 text-center">
-                    <h2 className="text-2xl font-bold mb-2">Error</h2>
+            <div >
+                <div >
+                    <h2 >Error</h2>
                     <p>{error}</p>
                 </div>
             </div>
@@ -110,22 +110,19 @@ function EventList() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+        <div >
+            <h1 >
                 Upcoming Events
             </h1>
             
             {/* Search and Filter Section */}
-            <div className="mb-8 flex flex-col md:flex-row gap-4">
+            <div >
                 <input
                     type="text"
                     placeholder="Search events..."
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                             dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 
-                             focus:border-transparent"
+                    
                 />
-                <select className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                                dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500">
+                <select >
                     <option value="">All Categories</option>
                     <option value="music">Music</option>
                     <option value="sports">Sports</option>
@@ -134,7 +131,7 @@ function EventList() {
             </div>
 
             {/* Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div >
                 {events.map((event) => (
                     <EventCard key={event.id} event={event} />
                 ))}
@@ -142,8 +139,8 @@ function EventList() {
 
             {/* Empty State */}
             {events.length === 0 && (
-                <div className="text-center py-12">
-                    <h3 className="text-xl text-gray-600 dark:text-gray-400">
+                <div >
+                    <h3 >
                         No events found
                     </h3>
                 </div>

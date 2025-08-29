@@ -12,41 +12,41 @@ import Profile from "./pages/Profile";
 import MyTickets from "./pages/MyTickets";
 
 const Layout = ({ children }) => (
-  <div className="min-h-screen bg-primary-100 text-neutral-800">
+  <div >
     <Header />
-    <main className="pt-8 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main >
+      <div >
         {children}
       </div>
     </main>
-    <footer className="bg-primary-200 border-t border-primary-300 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer >
+      <div >
+        <div >
           <div>
-            <h3 className="font-display text-xl font-semibold text-neutral-800 mb-4">
+            <h3 >
               Ticketi
             </h3>
-            <p className="text-neutral-600">
+            <p >
               Your one-stop destination for event tickets.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold text-neutral-800 mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><a href="/event-list" className="text-neutral-600 hover:text-primary-600">Events</a></li>
-              <li><a href="/create-event" className="text-neutral-600 hover:text-primary-600">Host Event</a></li>
-              <li><a href="/my-tickets" className="text-neutral-600 hover:text-primary-600">My Tickets</a></li>
+            <h4 >Quick Links</h4>
+            <ul >
+              <li><a href="/event-list" >Events</a></li>
+              <li><a href="/create-event" >Host Event</a></li>
+              <li><a href="/my-tickets" >My Tickets</a></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold text-neutral-800 mb-4">Contact</h4>
-            <ul className="space-y-2">
-              <li className="text-neutral-600">support@ticketi.com</li>
-              <li className="text-neutral-600">+1 (555) 123-4567</li>
+            <h4 >Contact</h4>
+            <ul >
+              <li >support@ticketi.com</li>
+              <li >+1 (555) 123-4567</li>
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-primary-300 text-center text-neutral-600">
+        <div >
           © {new Date().getFullYear()} Ticketi. All rights reserved.
         </div>
       </div>
