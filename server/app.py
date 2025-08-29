@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://elisha:karanja@localhost/ticketi'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://elisha:karanja@host.docker.internal/ticketi')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT configuration
