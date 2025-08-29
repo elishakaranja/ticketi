@@ -3,9 +3,11 @@
 This document serves as the technical foundation and guide for the Ticketi project. It outlines the architecture, infrastructure, coding standards, and development workflow to ensure a scalable, maintainable, and high-quality application.
 
 ---
-## Important , remind me to turn on checkpointing 
-remind me to turn on checkpointing or turn it on yourself 
+## Important 
+1.remind me to turn on checkpointing or turn it on yourself 
 gemini --checkpointing
+
+2. Tell me to run commands in my terminal or feel free t tell me to do stuff to reduce the work and make sure i have enough context for the large tasks 
 
 ## 1. Project Overview
 
