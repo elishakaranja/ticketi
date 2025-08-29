@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from models import db, Event, Ticket, User
@@ -114,7 +114,7 @@ def create_event():
 
     except Exception as e:
         db.session.rollback()
-        print(f"Error creating event: {str(e)}")  # Add server-side logging
+        current_app.logger.error(f"Error creating event: {str(e)}")  # Add server-side logging
         return jsonify({'error': f'Failed to create event: {str(e)}'}), 500
 
 # Update event 

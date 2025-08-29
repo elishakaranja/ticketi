@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -14,6 +15,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+
+# Configure logging
+if not app.debug:
+    log_handler = logging.FileHandler('error.log')
+    log_handler.setLevel(logging.ERROR)
+    app.logger.addHandler(log_handler)
 CORS(app)
 
 # Database configuration
@@ -41,6 +48,7 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
+    app.logger.error(f'Internal server error: {error}')
     return jsonify({'error': 'Internal server error'}), 500
 
 # Remove duplicate routes since they are handled in blueprints
