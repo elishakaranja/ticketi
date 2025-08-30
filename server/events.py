@@ -46,76 +46,31 @@ def get_event(event_id):
     return jsonify(event.to_dict()), 200
 
 
+########################################
+
+from services.event_service import create_event as create_event_service
+
 # Create a New Event
 @events_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_event():
-    try:
-        current_user_id = get_jwt_identity()
-        data = request.get_json()
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
 
-        # Validate required fields
-        required_fields = ['name', 'location', 'description', 'date', 'price', 'capacity']
-        missing_fields = [field for field in required_fields if field not in data]
-        if missing_fields:
-            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
+    # Validate required fields
+    required_fields = ['name', 'location', 'description', 'date', 'price', 'capacity']
+    missing_fields = [field for field in required_fields if field not in data]
+    if missing_fields:
+        return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
 
-        # Validate date format
-        try:
-            event_date = datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
-            if event_date <= datetime.utcnow():
-                return jsonify({'error': 'Event date must be in the future'}), 400
-        except ValueError:
-            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD HH:MM:SS'}), 400
+    event, error = create_event_service(data, current_user_id)
 
-        # Validate price and capacity
-        try:
-            price = float(data['price'])
-            capacity = int(data['capacity'])
-            if price < 0:
-                return jsonify({'error': 'Price cannot be negative'}), 400
-            if capacity <= 0:
-                return jsonify({'error': 'Capacity must be greater than 0'}), 400
-        except (ValueError, TypeError):
-            return jsonify({'error': 'Invalid price or capacity value'}), 400
+    if error:
+        return jsonify(error), 400
 
-        # Create new event
-        new_event = Event(
-            name=data['name'],
-            location=data['location'],
-            location_lat=data.get('location_lat'),
-            location_lng=data.get('location_lng'),
-            description=data['description'],
-            date=event_date,
-            price=price,
-            capacity=capacity,
-            image=data.get('image'),
-            user_id=current_user_id,
-            status='upcoming'
-        )
-        
-        db.session.add(new_event)
-        db.session.commit()
+    return jsonify(event.to_dict()), 201
 
-        # Generate tickets for the event
-        tickets = []
-        for _ in range(capacity):
-            ticket = Ticket(
-                event_id=new_event.id,
-                price=price,
-                status='available'
-            )
-            tickets.append(ticket)
-        
-        db.session.bulk_save_objects(tickets)
-        db.session.commit()
-
-        return jsonify(new_event.to_dict()), 201
-
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"Error creating event: {str(e)}")  # Add server-side logging
-        return jsonify({'error': f'Failed to create event: {str(e)}'}), 500
+from services.event_service import update_event as update_event_service
 
 # Update event 
 @events_bp.route('/<int:event_id>', methods=['PUT'])
@@ -130,40 +85,14 @@ def update_event(event_id):
 
     data = request.get_json()
 
-    # Update fields if provided
-    if 'name' in data:
-        event.name = data['name']
-    if 'location' in data:
-        event.location = data['location']
-    if 'location_lat' in data:
-        event.location_lat = data['location_lat']
-    if 'location_lng' in data:
-        event.location_lng = data['location_lng']
-    if 'description' in data:
-        event.description = data['description']
+    updated_event, error = update_event_service(event, data)
 
-        
-    if 'date' in data:
-        if not is_valid_date(data['date']):
-            return jsonify({'error': 'Invalid date'}), 400
-        event.date = datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
-    if 'price' in data:
-        if not isinstance(data['price'], (int, float)) or data['price'] < 0:
-            return jsonify({'error': 'Invalid price'}), 400
-        event.price = data['price']
-    if 'image' in data:
-        event.image = data['image']
-    if 'status' in data:
-        if data['status'] not in ['upcoming', 'ongoing', 'completed']:
-            return jsonify({'error': 'Invalid status'}), 400
-        event.status = data['status']
+    if error:
+        return jsonify(error), 400
 
-    try:
-        db.session.commit()
-        return jsonify(event.to_dict()), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'Failed to update event'}), 500
+    return jsonify(updated_event.to_dict()), 200
+
+from services.event_service import delete_event as delete_event_service
 
 @events_bp.route('/<int:event_id>', methods=['DELETE'])
 @jwt_required()
@@ -175,13 +104,12 @@ def delete_event(event_id):
     if event.user_id != current_user_id:
         return jsonify({'error': 'Unauthorized'}), 403
 
-    try:
-        db.session.delete(event)
-        db.session.commit()
-        return jsonify({'message': 'Event deleted successfully'}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'Failed to delete event'}), 500
+    success, error = delete_event_service(event)
+
+    if error:
+        return jsonify(error), 500
+
+    return jsonify({'message': 'Event deleted successfully'}), 200
 
 @events_bp.route('/my-events', methods=['GET'])
 @jwt_required()

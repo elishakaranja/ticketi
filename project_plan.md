@@ -122,3 +122,11 @@ This roadmap breaks down the project into three phases, each with a clear set of
     *   **Task:** Implement a Data Fetching Library: Refactor the data fetching logic to use `React Query` or `SWR` for better caching and state management.
     *   **Task:** Improve UX with Loading/Error States: Implement consistent loading skeletons and error messages across the application.
     *   **Task:** End-to-End Testing: Write end-to-end tests with `Cypress` or `Playwright` to cover critical user flows.
+
+---
+
+## Part 3: Best Practices Learned
+
+This section will keep track of the best practices we discuss throughout the project.
+
+*   **Aliasing Imports (`as`):** Use `as` to alias imports to avoid name collisions, to abbreviate long names, and to follow community conventions (e.g., `import pandas as pd`). Avoid using aliases unnecessarily or with confusing names.

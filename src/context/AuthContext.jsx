@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../api/api';
 
 const AuthContext = createContext(null);
 
@@ -8,25 +9,15 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is logged in on mount
         const checkAuth = async () => {
             if (token) {
                 try {
-                    const response = await fetch('http://localhost:5000/auth/profile', {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    if (response.ok) {
-                        const userData = await response.json();
-                        setUser(userData);
-                    } else {
-                        // Token is invalid
-                        localStorage.removeItem('token');
-                        setToken(null);
-                    }
+                    const response = await api.get('/auth/profile');
+                    setUser(response.data);
                 } catch (error) {
-                    console.error('Auth check failed:', error);
+                    // Token is invalid
+                    localStorage.removeItem('token');
+                    setToken(null);
                 }
             }
             setLoading(false);
@@ -37,51 +28,25 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await fetch('http://localhost:5000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setUser(data.user);
-                setToken(data.access_token);
-                localStorage.setItem('token', data.access_token);
-                return { success: true };
-            } else {
-                return { success: false, error: data.error };
-            }
+            const response = await api.post('/auth/login', { email, password });
+            setUser(response.data.user);
+            setToken(response.data.access_token);
+            localStorage.setItem('token', response.data.access_token);
+            return { success: true };
         } catch (error) {
-            return { success: false, error: 'Login failed' };
+            return { success: false, error: error.response?.data?.error || 'Login failed' };
         }
     };
 
     const register = async (username, email, password) => {
         try {
-            const response = await fetch('http://localhost:5000/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setUser(data.user);
-                setToken(data.access_token);
-                localStorage.setItem('token', data.access_token);
-                return { success: true };
-            } else {
-                return { success: false, error: data.error };
-            }
+            const response = await api.post('/auth/register', { username, email, password });
+            setUser(response.data.user);
+            setToken(response.data.access_token);
+            localStorage.setItem('token', response.data.access_token);
+            return { success: true };
         } catch (error) {
-            return { success: false, error: 'Registration failed' };
+            return { success: false, error: error.response?.data?.error || 'Registration failed' };
         }
     };
 

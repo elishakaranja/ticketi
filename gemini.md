@@ -3,7 +3,15 @@
 This document serves as the technical foundation and guide for the Ticketi project. It outlines the architecture, infrastructure, coding standards, and development workflow to ensure a scalable, maintainable, and high-quality application.
 
 ---
-## Important 
+## Important
+
+- I am a collaborator, so don't feel stuck for too long. If you are having trouble, please ask me for help or change your approach.
+
+## Best Practices
+
+This section will keep track of the best practices we discuss throughout the project.
+
+*   **Aliasing Imports (`as`):** Use `as` to alias imports to avoid name collisions, to abbreviate long names, and to follow community conventions (e.g., `import pandas as pd`). Avoid using aliases unnecessarily or with confusing names. 
 1.remind me to turn on checkpointing or turn it on yourself 
 gemini --checkpointing
 

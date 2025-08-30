@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import api from "../api/api";
+
 function EventDetails() {
   const { id } = useParams();
   const { token } = useAuth();
@@ -17,14 +22,14 @@ function EventDetails() {
     setLoading(true);
     setError(null);
     Promise.all([
-      fetch(`http://localhost:5000/events/${id}`).then(res => res.json()),
-      fetch(`http://localhost:5000/tickets/available/${id}`).then(res => res.json()),
-      fetch(`http://localhost:5000/tickets/resale/${id}`).then(res => res.json())
+      api.get(`/events/${id}`),
+      api.get(`/tickets/available/${id}`),
+      api.get(`/tickets/resale/${id}`)
     ])
       .then(([eventData, ticketData, resaleData]) => {
-        setEvent(eventData);
-        setAvailable(ticketData.available_tickets);
-        setResaleTickets(resaleData);
+        setEvent(eventData.data);
+        setAvailable(ticketData.data.available_tickets);
+        setResaleTickets(resaleData.data);
         setLoading(false);
       })
       .catch(err => {
@@ -37,19 +42,12 @@ function EventDetails() {
     setBuying(true);
     setError(null);
     setSuccess(null);
-    fetch(`http://localhost:5000/tickets/purchase/${id}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) throw new Error(data.error);
+    api.post(`/tickets/purchase/${id}`)
+      .then(res => {
         setSuccess("Ticket purchased successfully!");
         setAvailable(a => a - 1);
       })
-      .catch(err => setError(err.message))
+      .catch(err => setError(err.response?.data?.error || "Failed to purchase ticket"))
       .finally(() => setBuying(false));
   }
 
@@ -58,20 +56,11 @@ function EventDetails() {
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch(`http://localhost:5000/tickets/purchase-resale/${ticketId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-      
+      await api.post(`/tickets/purchase-resale/${ticketId}`);
       setSuccess("Resale ticket purchased successfully!");
-      // Remove the purchased ticket from resale list
       setResaleTickets(tickets => tickets.filter(t => t.ticket_id !== ticketId));
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || "Failed to purchase resale ticket");
     } finally {
       setBuying(false);
     }

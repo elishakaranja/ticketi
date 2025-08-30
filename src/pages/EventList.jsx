@@ -3,6 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import EventCard from '../components/EventCard';
 
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import EventCard from '../components/EventCard';
+import api from '../api/api';
+
 function EventList() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,7 +16,7 @@ function EventList() {
     const [deleteError, setDeleteError] = useState(null);
     const [ticketStatus, setTicketStatus] = useState({});
     const navigate = useNavigate();
-    const { user, token } = useAuth();
+    const { user } = useAuth();
 
     useEffect(() => {
         fetchEvents();
@@ -18,20 +24,14 @@ function EventList() {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch("http://localhost:5000/events/");
-            if (!response.ok) throw new Error("Failed to fetch events");
-            const data = await response.json();
-
-            // Fetch available tickets for each event
-            const eventsWithTickets = await Promise.all(data.map(async (event) => {
-                const ticketsResponse = await fetch(`http://localhost:5000/tickets/available/${event.id}`);
-                const ticketsData = await ticketsResponse.json();
+            const response = await api.get("/events/");
+            const eventsWithTickets = await Promise.all(response.data.map(async (event) => {
+                const ticketsResponse = await api.get(`/tickets/available/${event.id}`);
                 return {
                     ...event,
-                    availableTickets: ticketsData.available_tickets
+                    availableTickets: ticketsResponse.data.available_tickets
                 };
             }));
-
             setEvents(eventsWithTickets);
             setLoading(false);
         } catch (err) {
@@ -43,40 +43,20 @@ function EventList() {
     const handleDelete = async (eventId) => {
         setDeleteError(null);
         try {
-            const response = await fetch(`http://localhost:5000/events/${eventId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Failed to delete event");
-            }
+            await api.delete(`/events/${eventId}`);
             setEvents(events.filter(event => event.id !== eventId));
         } catch (err) {
-            setDeleteError(err.message);
+            setDeleteError(err.response?.data?.error || "Failed to delete event");
         }
     };
 
     const handleBuyTicket = async (eventId) => {
         try {
-            const response = await fetch(`http://localhost:5000/tickets/purchase/${eventId}`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            const data = await response.json();
-            
-            if (!response.ok) throw new Error(data.error || "Failed to purchase ticket");
-            
+            await api.post(`/tickets/purchase/${eventId}`);
             setTicketStatus({
                 ...ticketStatus,
                 [eventId]: { success: true, message: "Ticket purchased successfully!" }
             });
-            
-            // Update available tickets count
             setEvents(events.map(event => 
                 event.id === eventId 
                     ? { ...event, availableTickets: event.availableTickets - 1 }
@@ -85,7 +65,7 @@ function EventList() {
         } catch (err) {
             setTicketStatus({
                 ...ticketStatus,
-                [eventId]: { success: false, message: err.message }
+                [eventId]: { success: false, message: err.response?.data?.error || "Failed to purchase ticket" }
             });
         }
     };

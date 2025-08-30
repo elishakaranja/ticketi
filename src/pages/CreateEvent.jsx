@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+import api from '../api/api';
+
 function CreateEvent() {
     const navigate = useNavigate();
-    const { user, token } = useAuth();
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         name: "", description: "", location: "", date: "", price: "", capacity: "", image: ""
     });
@@ -28,7 +30,6 @@ function CreateEvent() {
         setError(null);
         setSuccess(null);
 
-        // Validate price and capacity
         const price = parseFloat(formData.price);
         const capacity = parseInt(formData.capacity);
         
@@ -44,7 +45,6 @@ function CreateEvent() {
             return;
         }
 
-        // Format the date properly
         const eventDate = new Date(formData.date);
         if (isNaN(eventDate.getTime())) {
             setError("Please enter a valid date");
@@ -52,14 +52,13 @@ function CreateEvent() {
             return;
         }
 
-        // Format date to match backend's expected format: YYYY-MM-DD HH:MM:SS
         const formattedDate = eventDate.getFullYear() + '-' +
             String(eventDate.getMonth() + 1).padStart(2, '0') + '-' +
             String(eventDate.getDate()).padStart(2, '0') + ' ' +
             '00:00:00';
 
         try {
-            console.log('Sending data:', {
+            const response = await api.post("/events/", {
                 name: formData.name.trim(),
                 description: formData.description.trim(),
                 location: formData.location.trim(),
@@ -69,33 +68,10 @@ function CreateEvent() {
                 image: formData.image.trim() || null
             });
 
-            const response = await fetch("http://localhost:5000/events/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    name: formData.name.trim(),
-                    description: formData.description.trim(),
-                    location: formData.location.trim(),
-                    date: formattedDate,
-                    price: price,
-                    capacity: capacity,
-                    image: formData.image.trim() || null
-                })
-            });
-
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to create event");
-            }
-            
             setSuccess("Event created successfully!");
             setTimeout(() => navigate("/event-list"), 1000);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.error || "Failed to create event");
             console.error("Error creating event:", err);
         } finally {
             setLoading(false);

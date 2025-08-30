@@ -2,8 +2,13 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import api from "../api/api";
+
 function Profile() {
-  const { user, token, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const [formData, setFormData] = useState({ username: "", email: "" });
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
@@ -12,24 +17,20 @@ function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token) {
+    if (!user) {
       navigate("/login");
       return;
     }
-    fetch("http://localhost:5000/auth/profile", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error);
-        setFormData({ username: data.username, email: data.email });
+    api.get("/auth/profile")
+      .then((res) => {
+        setFormData({ username: res.data.username, email: res.data.email });
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
-  }, [token, navigate]);
+  }, [user, navigate]);
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,22 +40,13 @@ function Profile() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-    fetch("http://localhost:5000/auth/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error);
+    api.put("/auth/profile", formData)
+      .then((res) => {
         setSuccess("Profile updated successfully!");
-        setUser(data); // update context
+        setUser(res.data); // update context
         setEditMode(false);
       })
-      .catch((err) => setError(err.message));
+      .catch((err) => setError(err.response?.data?.error || "Failed to update profile"));
   }
 
   if (loading) return <div>Loading...</div>;

@@ -52,3 +52,46 @@ def create_event(data, user_id):
         db.session.rollback()
         # In a real app, you'd want to log this error
         return None, {'error': f'Failed to create event: {str(e)}'}
+
+def update_event(event, data):
+    """Updates an event."""
+    try:
+        if 'name' in data:
+            event.name = data['name']
+        if 'location' in data:
+            event.location = data['location']
+        if 'location_lat' in data:
+            event.location_lat = data['location_lat']
+        if 'location_lng' in data:
+            event.location_lng = data['location_lng']
+        if 'description' in data:
+            event.description = data['description']
+        if 'date' in data:
+            event.date = datetime.strptime(data['date'], '%Y-%m-%d %H:%M:%S')
+        if 'price' in data:
+            event.price = float(data['price'])
+        if 'image' in data:
+            event.image = data['image']
+        if 'status' in data:
+            event.status = data['status']
+
+        db.session.commit()
+        return event, None
+
+    except (ValueError, TypeError):
+        return None, {'error': 'Invalid data format'}
+    except Exception as e:
+        db.session.rollback()
+        # In a real app, you'd want to log this error
+        return None, {'error': f'Failed to update event: {str(e)}'}
+
+def delete_event(event):
+    """Deletes an event."""
+    try:
+        db.session.delete(event)
+        db.session.commit()
+        return True, None
+    except Exception as e:
+        db.session.rollback()
+        # In a real app, you'd want to log this error
+        return False, {'error': f'Failed to delete event: {str(e)}'}
