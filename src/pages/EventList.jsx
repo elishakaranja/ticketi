@@ -2,37 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import EventCard from '../components/EventCard';
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import EventCard from '../components/EventCard';
 import api from '../api/api';
+import { Container, Grid, Typography, CircularProgress, Alert, Pagination } from '@mui/material';
 
 function EventList() {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [deleteError, setDeleteError] = useState(null);
-    const [ticketStatus, setTicketStatus] = useState({});
-    const navigate = useNavigate();
-    const { user } = useAuth();
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        fetchEvents();
-    }, []);
+        fetchEvents(page);
+    }, [page]);
 
-    const fetchEvents = async () => {
+    const fetchEvents = async (pageNum) => {
+        setLoading(true);
         try {
-            const response = await api.get("/events/");
-            const eventsWithTickets = await Promise.all(response.data.map(async (event) => {
-                const ticketsResponse = await api.get(`/tickets/available/${event.id}`);
-                return {
-                    ...event,
-                    availableTickets: ticketsResponse.data.available_tickets
-                };
-            }));
-            setEvents(eventsWithTickets);
+            const response = await api.get(`/events/?page=${pageNum}`);
+            setEvents(response.data.events);
+            setTotalPages(response.data.total_pages);
             setLoading(false);
         } catch (err) {
             setError(err.message);
@@ -40,92 +29,47 @@ function EventList() {
         }
     };
 
-    const handleDelete = async (eventId) => {
-        setDeleteError(null);
-        try {
-            await api.delete(`/events/${eventId}`);
-            setEvents(events.filter(event => event.id !== eventId));
-        } catch (err) {
-            setDeleteError(err.response?.data?.error || "Failed to delete event");
-        }
-    };
-
-    const handleBuyTicket = async (eventId) => {
-        try {
-            await api.post(`/tickets/purchase/${eventId}`);
-            setTicketStatus({
-                ...ticketStatus,
-                [eventId]: { success: true, message: "Ticket purchased successfully!" }
-            });
-            setEvents(events.map(event => 
-                event.id === eventId 
-                    ? { ...event, availableTickets: event.availableTickets - 1 }
-                    : event
-            ));
-        } catch (err) {
-            setTicketStatus({
-                ...ticketStatus,
-                [eventId]: { success: false, message: err.response?.data?.error || "Failed to purchase ticket" }
-            });
-        }
+    const handlePageChange = (event, value) => {
+        setPage(value);
     };
 
     if (loading) {
         return (
-            <div >
-                <div ></div>
-            </div>
+            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+            </Container>
         );
     }
 
     if (error) {
         return (
-            <div >
-                <div >
-                    <h2 >Error</h2>
-                    <p>{error}</p>
-                </div>
-            </div>
+            <Container sx={{ mt: 4 }}>
+                <Alert severity="error">{error}</Alert>
+            </Container>
         );
     }
 
     return (
-        <div >
-            <h1 >
+        <Container sx={{ py: 8 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
                 Upcoming Events
-            </h1>
-            
-            {/* Search and Filter Section */}
-            <div >
-                <input
-                    type="text"
-                    placeholder="Search events..."
-                    
-                />
-                <select >
-                    <option value="">All Categories</option>
-                    <option value="music">Music</option>
-                    <option value="sports">Sports</option>
-                    <option value="theater">Theater</option>
-                </select>
-            </div>
-
-            {/* Responsive Grid */}
-            <div >
+            </Typography>
+            <Grid container spacing={4}>
                 {events.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <Grid item key={event.id} xs={12} sm={6} md={4}>
+                        <EventCard event={event} />
+                    </Grid>
                 ))}
-                            </div>
-
-            {/* Empty State */}
+            </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Pagination count={totalPages} page={page} onChange={handlePageChange} />
+            </Box>
             {events.length === 0 && (
-                <div >
-                    <h3 >
-                        No events found
-                    </h3>
-                </div>
+                <Typography variant="h6" component="p" sx={{ mt: 4 }}>
+                    No events found
+                </Typography>
             )}
-        </div>
+        </Container>
     );
 };
 

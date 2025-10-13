@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 import logging
 from flask import Flask, jsonify, request
@@ -6,53 +9,56 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
-from models import db, Event, User
-from auth import auth_bp
-from events import events_bp
-from tickets import tickets_bp
-from dotenv import load_dotenv
+from server.models import db, Event, User # Imported for Flask-Migrate
+from server.auth import auth_bp
+from server.events import events_bp
+from server.tickets import tickets_bp
 
-load_dotenv()
+from server.config import DevelopmentConfig, ProductionConfig, TestingConfig
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-# Configure logging
-if not app.debug:
-    log_handler = logging.FileHandler('error.log')
-    log_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(log_handler)
-CORS(app)
+    env = os.environ.get('FLASK_ENV', 'development')
+    if env == 'production':
+        app.config.from_object(ProductionConfig)
+    elif env == 'testing':
+        app.config.from_object(TestingConfig)
+    else:
+        app.config.from_object(DevelopmentConfig)
 
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://elisha:karanja@host.docker.internal/ticketi')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    # Configure logging
+    if not app.debug:
+        log_handler = logging.FileHandler('error.log')
+        log_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(log_handler)
+    
+    CORS(app)
 
-# JWT configuration
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+    # Initialize extensions
+    db.init_app(app)
+    Migrate(app, db)
+    JWTManager(app)
 
-# Initialize extensions
-db.init_app(app)
-migrate = Migrate(app, db)
-jwt = JWTManager(app)
+    # Register blueprints
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(events_bp, url_prefix='/events')
+    app.register_blueprint(tickets_bp, url_prefix='/tickets')
 
-# Register blueprints
-app.register_blueprint(auth_bp, url_prefix='/auth')
-app.register_blueprint(events_bp, url_prefix='/events')
-app.register_blueprint(tickets_bp, url_prefix='/tickets')
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({'error': 'Not found'}), 404
 
-# Error handlers
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({'error': 'Not found'}), 404
+    @app.errorhandler(500)
+    def internal_error(error):
+        app.logger.error(f'Internal server error: {error}')
+        return jsonify({'error': 'Internal server error'}), 500
 
-@app.errorhandler(500)
-def internal_error(error):
-    app.logger.error(f'Internal server error: {error}')
-    return jsonify({'error': 'Internal server error'}), 500
+    return app
 
-# Remove duplicate routes since they are handled in blueprints
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)
 
 

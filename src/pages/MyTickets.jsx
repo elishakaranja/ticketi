@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/api";
+
+import { Container, Box, Typography, CircularProgress, Alert, Pagination, TextField, Button } from '@mui/material';
 
 function MyTickets() {
     const { token } = useAuth();
@@ -12,20 +12,27 @@ function MyTickets() {
     const [error, setError] = useState(null);
     const [resalePrice, setResalePrice] = useState({});
     const [resaleStatus, setResaleStatus] = useState({});
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        fetchTickets();
-    }, [token]);
+        fetchTickets(page);
+    }, [token, page]);
 
-    const fetchTickets = async () => {
+    const fetchTickets = async (pageNum) => {
         try {
-            const response = await api.get("/tickets/my-tickets");
-            setTickets(response.data);
+            const response = await api.get(`/tickets/my-tickets?page=${pageNum}`);
+            setTickets(response.data.tickets);
+            setTotalPages(response.data.total_pages);
             setLoading(false);
         } catch (err) {
             setError(err.message);
             setLoading(false);
         }
+    };
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
     };
 
     const handleResell = async (ticketId) => {
@@ -53,56 +60,60 @@ function MyTickets() {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div style={{ color: "red" }}>{error}</div>;
-    if (!tickets.length) return <div>You don't have any tickets yet.</div>;
+    if (loading) return <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Container>;
+    if (error) return <Container sx={{ mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
+    if (!tickets.length) return <Container sx={{ mt: 4 }}><Typography>You don't have any tickets yet.</Typography></Container>;
 
     return (
-        <div >
-            <h1>My Tickets</h1>
-            <div >
+        <Container sx={{ py: 8 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                My Tickets
+            </Typography>
+            <Box>
                 {tickets.map(ticket => (
-                    <div key={ticket.ticket_id} >
-                        <h3>{ticket.event.name}</h3>
-                        <p>Date: {ticket.event.date}</p>
-                        <p>Location: {ticket.event.location}</p>
-                        <p>Purchase Price: ${ticket.price}</p>
-                        <p>Status: {ticket.status}</p>
+                    <Box key={ticket.ticket_id} sx={{ mb: 2, p: 2, border: '1px solid', borderColor: 'grey.300', borderRadius: 1 }}>
+                        <Typography variant="h6">{ticket.event.name}</Typography>
+                        <Typography>Date: {ticket.event.date}</Typography>
+                        <Typography>Location: {ticket.event.location}</Typography>
+                        <Typography>Purchase Price: ${ticket.price}</Typography>
+                        <Typography>Status: {ticket.status}</Typography>
                         {ticket.status === "sold" && (
-                            <div>
-                                <input
+                            <Box mt={2}>
+                                <TextField
                                     type="number"
-                                    min="0"
-                                    step="0.01"
-                                    placeholder="Resale Price"
-                                    value={resalePrice[ticket.ticket_id] || ""}
+                                    label="Resale Price"
+                                    size="small"
+                                    value={resalePrice[ticket.ticket_id] || ''}
                                     onChange={(e) => setResalePrice({
                                         ...resalePrice,
                                         [ticket.ticket_id]: e.target.value
                                     })}
                                 />
-                                <button onClick={() => handleResell(ticket.ticket_id)}>
+                                <Button onClick={() => handleResell(ticket.ticket_id)} variant="contained" sx={{ ml: 1 }}>
                                     List for Resale
-                                </button>
-                            </div>
+                                </Button>
+                            </Box>
                         )}
                         {ticket.status === "resale" && (
-                            <div>
-                                <p>Resale Price: ${ticket.resale_price}</p>
-                                <button onClick={() => handleCancelResale(ticket.ticket_id)}>
+                            <Box mt={2}>
+                                <Typography>Resale Price: ${ticket.resale_price}</Typography>
+                                <Button onClick={() => handleCancelResale(ticket.ticket_id)} variant="outlined" sx={{ ml: 1 }}>
                                     Cancel Resale
-                                </button>
-                            </div>
+                                </Button>
+                            </Box>
                         )}
                         {resaleStatus[ticket.ticket_id] && (
-                            <p >
+                            <Typography sx={{ mt: 1 }}>
                                 {resaleStatus[ticket.ticket_id]}
-                            </p>
+                            </Typography>
                         )}
-                    </div>
+                    </Box>
                 ))}
-            </div>
-        </div>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Pagination count={totalPages} page={page} onChange={handlePageChange} />
+            </Box>
+        </Container>
     );
 }
 

@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
-from models import db, Event, Ticket, Transaction, User
+from server.models import db, Event, Ticket, Transaction, User
 from sqlalchemy import and_
+from server.services.ticket_service import purchase_ticket as purchase_ticket_service, resell_ticket as resell_ticket_service, purchase_resale_ticket as purchase_resale_ticket_service, cancel_resale as cancel_resale_service
 
 tickets_bp = Blueprint('tickets', __name__)
 
@@ -20,7 +21,7 @@ def get_available_tickets(event_id):
         'available_tickets': available_tickets
     }), 200
 
-from services.ticket_service import purchase_ticket as purchase_ticket_service
+
 
 @tickets_bp.route('/purchase/<int:event_id>', methods=['POST'])
 @jwt_required()
@@ -43,19 +44,30 @@ def purchase_ticket(event_id):
 @jwt_required()
 def get_my_tickets():
     """Get all tickets owned by the current user"""
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
     current_user_id = get_jwt_identity()
     
-    tickets = Ticket.query.filter_by(user_id=current_user_id).all()
-    return jsonify([{
-        'ticket_id': ticket.id,
-        'event': ticket.event.to_dict(),
-        'status': ticket.status,
-        'purchase_date': ticket.purchase_date.isoformat() if ticket.purchase_date else None,
-        'price': ticket.price,
-        'resale_price': ticket.resale_price
-    } for ticket in tickets]), 200
+    query = Ticket.query.filter_by(user_id=current_user_id)
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    tickets = pagination.items
+    
+    return jsonify({
+        'tickets': [{
+            'ticket_id': ticket.id,
+            'event': ticket.event.to_dict(),
+            'status': ticket.status,
+            'purchase_date': ticket.purchase_date.isoformat() if ticket.purchase_date else None,
+            'price': ticket.price,
+            'resale_price': ticket.resale_price
+        } for ticket in tickets],
+        'total_pages': pagination.pages,
+        'current_page': pagination.page,
+        'has_next': pagination.has_next,
+        'has_prev': pagination.has_prev
+    }), 200
 
-from services.ticket_service import resell_ticket as resell_ticket_service
+
 
 @tickets_bp.route('/resell/<int:ticket_id>', methods=['POST'])
 @jwt_required()
@@ -95,7 +107,7 @@ def get_resale_tickets(event_id):
         'seller': ticket.owner.username
     } for ticket in resale_tickets]), 200
 
-from services.ticket_service import purchase_resale_ticket as purchase_resale_ticket_service
+
 
 @tickets_bp.route('/purchase-resale/<int:ticket_id>', methods=['POST'])
 @jwt_required()
@@ -116,7 +128,7 @@ def purchase_resale_ticket(ticket_id):
         'transaction_id': purchased_ticket.transactions[-1].id
     }), 201
 
-from services.ticket_service import cancel_resale as cancel_resale_service
+
 
 @tickets_bp.route('/cancel-resale/<int:ticket_id>', methods=['POST'])
 @jwt_required()

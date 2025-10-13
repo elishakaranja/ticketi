@@ -95,14 +95,39 @@ This roadmap breaks down the project into three phases, each with a clear set of
     *   **Task:** Add Backend Tests: Set up a testing framework (like `pytest`) and write initial unit tests for the new service functions.
 *   **Frontend:**
     *   **Task:** Centralize API Configuration: Create an API client (e.g., `src/api/api.js`) that centralizes `fetch` or `axios` calls and uses environment variables for the base URL.
-    *   **Task:** Implement a UI Library: Choose and integrate a component library like `Material-UI` or `Chakra UI` to start building a consistent design system.
+
+### MVP 1.5: UI Foundation
+
+**Goal:** Create a visually appealing, consistent, and maintainable design system that provides a top-notch user experience.
+
+*   **Task 1: Create a Global Theme:** - **DONE**
+    *   **Why:** To ensure a consistent look and feel across the entire application, we will create a global theme file. This will define our color palette, typography, and other design tokens.
+    *   **How:** We will create a `src/theme.js` file and use Material-UI's `createTheme` function to define our custom theme. We will then pass this theme to a `ThemeProvider` component in `src/main.jsx`.
+
+*   **Task 2: Refactor Core Components:**
+    *   **Why:** To ensure that all our core components are using the new design system, we will refactor them to use Material-UI components.
+    *   **How:** We will go through each of our existing components (`Header.jsx`, `EventCard.jsx`, `Button.jsx`, etc.) and replace the existing HTML with the appropriate Material-UI components.
+
+*   **Task 3: Create a Layout Component:**
+    *   **Why:** To create a consistent page layout across the entire application, we will create a dedicated `Layout.jsx` component.
+    *   **How:** This component will use Material-UI's layout components (like `Container`, `Grid`, and `Box`) to create a responsive and visually appealing page structure. It will include a header, a main content area, and a footer.
+
+*   **Task 4: Implement Responsive Design:**
+    *   **Why:** To ensure that our application looks great on all screen sizes, from mobile phones to large desktop monitors, we will implement a responsive design.
+    *   **How:** We will use Material-UI's responsive design features (like the `sx` prop and the `useMediaQuery` hook) to create a layout that adapts to different screen sizes.
 
 ### Phase 2: Core Feature Expansion (MVP 2)
 
 **Goal:** Enhance the core user experience by adding new, high-value features.
 
 *   **Backend:**
-    *   **Task:** Implement Pagination: Add pagination to the `get_events` and `get_my_tickets` endpoints.
+    *   **Task:** Implement Pagination
+    *   **Status:** Done
+    *   **Goal:** Modify our API endpoints to support pagination, allowing the frontend to request data in smaller chunks.
+    *   **Steps:**
+        1.  **Update the `get_events` endpoint:** We will modify the `get_events` endpoint in `server/events.py` to accept two new query parameters: `page` and `per_page`.
+        2.  **Use Flask-SQLAlchemy's `paginate()` method:** Instead of using `.all()`, we will use the built-in `.paginate()` method from Flask-SQLAlchemy.
+        3.  **Update the JSON response:** We will update the JSON response to include pagination information (total pages, next page, etc.).
     *   **Task:** Implement Advanced Search: Enhance the event search functionality with more filters (e.g., by date range, category).
     *   **Task:** User Profile Pictures: Add the ability for users to upload profile pictures.
 *   **Frontend:**
@@ -130,3 +155,9 @@ This roadmap breaks down the project into three phases, each with a clear set of
 This section will keep track of the best practices we discuss throughout the project.
 
 *   **Aliasing Imports (`as`):** Use `as` to alias imports to avoid name collisions, to abbreviate long names, and to follow community conventions (e.g., `import pandas as pd`). Avoid using aliases unnecessarily or with confusing names.
+*   **Automated Testing:** Automated testing is the practice of writing code to test your application code. It provides a safety net that allows you to make changes with confidence, serves as living documentation, and encourages better code design.
+    *   **Regressions:** A regression is a bug that appears in a feature that used to work correctly. Automated tests are essential for catching regressions before they reach users.
+    *   **The Testing Pyramid:** A scalable testing strategy uses a mix of different types of tests:
+        *   **Unit Tests:** Test the smallest units of code in isolation. They are fast and form the base of the pyramid.
+        *   **Integration Tests:** Test how different parts of the application work together. They are slower than unit tests but catch a wider range of bugs.
+        *   **End-to-End (E2E) Tests:** Test the entire application from the user's perspective. They are the slowest and should be used sparingly for critical user flows.

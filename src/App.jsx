@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext';
-import Header from "./components/Header";
+import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,49 +10,6 @@ import CreateEvent from "./pages/CreateEvent";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import MyTickets from "./pages/MyTickets";
-
-const Layout = ({ children }) => (
-  <div >
-    <Header />
-    <main >
-      <div >
-        {children}
-      </div>
-    </main>
-    <footer >
-      <div >
-        <div >
-          <div>
-            <h3 >
-              Ticketi
-            </h3>
-            <p >
-              Your one-stop destination for event tickets.
-            </p>
-          </div>
-          <div>
-            <h4 >Quick Links</h4>
-            <ul >
-              <li><a href="/event-list" >Events</a></li>
-              <li><a href="/create-event" >Host Event</a></li>
-              <li><a href="/my-tickets" >My Tickets</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 >Contact</h4>
-            <ul >
-              <li >support@ticketi.com</li>
-              <li >+1 (555) 123-4567</li>
-            </ul>
-          </div>
-        </div>
-        <div >
-          © {new Date().getFullYear()} Ticketi. All rights reserved.
-        </div>
-      </div>
-    </footer>
-  </div>
-);
 
 function App() {
   return (

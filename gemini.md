@@ -9,9 +9,7 @@ This document serves as the technical foundation and guide for the Ticketi proje
 
 ## Best Practices
 
-This section will keep track of the best practices we discuss throughout the project.
-
-*   **Aliasing Imports (`as`):** Use `as` to alias imports to avoid name collisions, to abbreviate long names, and to follow community conventions (e.g., `import pandas as pd`). Avoid using aliases unnecessarily or with confusing names. 
+For a detailed explanation of the best practices we've discussed, please see the "Best Practices Learned" section in `project_plan.md`. 
 1.remind me to turn on checkpointing or turn it on yourself 
 gemini --checkpointing
 

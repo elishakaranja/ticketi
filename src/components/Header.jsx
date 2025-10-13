@@ -1,15 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Button from './Button';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar } from '@mui/material';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
-
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
 
   const navLinks = [
     { path: '/event-list', label: 'Events' },
@@ -18,75 +14,42 @@ const Header = () => {
   ];
 
   return (
-    <header >
-      <div >
-        <div >
-          {/* Logo */}
-          <Link to="/">
-            <span >🎫</span>
-            <span >
-              Ticketi
-            </span>
-          </Link>
-
-          {/* Navigation */}
-          <nav >
-            {navLinks.map((link) => (
-              (!link.protected || (link.protected && user)) && (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  
-                >
-                  {link.label}
-                </Link>
-              )
-            ))}
-          </nav>
-
-          {/* Auth Buttons */}
-          <div >
-            {user ? (
-              <div >
-                <div >
-                  <div >
-                    <span >
-                      {user.username.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <span >
-                    {user.username}
-                  </span>
-                </div>
-                <Button variant="ghost" size="md" onClick={logout}>
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <div >
-                <Link to="/login">
-                  <Button variant="outline" size="md">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button variant="primary" size="md">
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button >
-            <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </header>
+    <AppBar position="static" color="primary">
+      <Toolbar>
+        <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, color: 'white', textDecoration: 'none' }}>
+          Ticketi
+        </Typography>
+        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          {navLinks.map((link) => (
+            (!link.protected || (link.protected && user)) && (
+              <Button
+                key={link.path}
+                component={Link}
+                to={link.path}
+                color="inherit"
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                {link.label}
+              </Button>
+            )
+          ))}
+        </Box>
+        <Box sx={{ flexGrow: 0 }}>
+          {user ? (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Avatar sx={{ mr: 2 }}>{user.username.charAt(0).toUpperCase()}</Avatar>
+              <Typography sx={{ mr: 2 }}>{user.username}</Typography>
+              <Button color="inherit" onClick={logout}>Logout</Button>
+            </Box>
+          ) : (
+            <Box>
+              <Button component={Link} to="/login" color="inherit">Sign In</Button>
+              <Button component={Link} to="/register" variant="contained" color="secondary">Sign Up</Button>
+            </Box>
+          )}
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 

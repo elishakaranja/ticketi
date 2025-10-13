@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
-from models import db, Event, Ticket, User
+from server.models import db, Event, Ticket, User
 from sqlalchemy import or_
+from server.services.event_service import create_event as create_event_service, update_event as update_event_service, delete_event as delete_event_service
 
 events_bp = Blueprint('events', __name__)
 
@@ -15,15 +16,13 @@ def is_valid_date(date_str): #helper function to check if the date is after now
 
 @events_bp.route('/', methods=['GET'])
 def get_events():
-    # Get query parameters for filtering
-    #allows users to filter/search by keyword or status
-    search = request.args.get('search', '') #get the value of search or return '' if not present 
-    status = request.args.get('status', 'upcoming')# get the value of status or use "upcoming if not present"
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    search = request.args.get('search', '')
+    status = request.args.get('status', 'upcoming')
     
-    # Base query
     query = Event.query
     
-    # Apply filters
     if search:
         query = query.filter(
             or_(
@@ -36,9 +35,16 @@ def get_events():
     if status:
         query = query.filter(Event.status == status)
     
-    # Execute query and return results
-    events = query.all()
-    return jsonify([event.to_dict() for event in events]), 200
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+    events = pagination.items
+    
+    return jsonify({
+        'events': [event.to_dict() for event in events],
+        'total_pages': pagination.pages,
+        'current_page': pagination.page,
+        'has_next': pagination.has_next,
+        'has_prev': pagination.has_prev
+    }), 200
 
 @events_bp.route('/<int:event_id>', methods=['GET'])
 def get_event(event_id):
@@ -48,7 +54,7 @@ def get_event(event_id):
 
 ########################################
 
-from services.event_service import create_event as create_event_service
+
 
 # Create a New Event
 @events_bp.route('/', methods=['POST'])
@@ -70,7 +76,6 @@ def create_event():
 
     return jsonify(event.to_dict()), 201
 
-from services.event_service import update_event as update_event_service
 
 # Update event 
 @events_bp.route('/<int:event_id>', methods=['PUT'])
@@ -80,7 +85,7 @@ def update_event(event_id):
     event = Event.query.get_or_404(event_id)
 
     # Check if user owns the event
-    if event.user_id != current_user_id:
+    if event.user_id != current_user_.id:
         return jsonify({'error': 'Unauthorized'}), 403
 
     data = request.get_json()
@@ -92,7 +97,6 @@ def update_event(event_id):
 
     return jsonify(updated_event.to_dict()), 200
 
-from services.event_service import delete_event as delete_event_service
 
 @events_bp.route('/<int:event_id>', methods=['DELETE'])
 @jwt_required()

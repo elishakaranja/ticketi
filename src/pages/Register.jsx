@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import '../styles/auth.css';
+import { Container, Box, Typography, TextField, Button, Alert } from '@mui/material';
 
 function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const { register } = useAuth();
     const navigate = useNavigate();
@@ -16,8 +15,8 @@ function Register() {
         e.preventDefault();
         setError('');
 
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters long');
             return;
         }
 
@@ -30,53 +29,65 @@ function Register() {
     };
 
     return (
-        <div className="auth-container">
-            <h2>Register</h2>
-            {error && <div className="error">{error}</div>}
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="username">Username:</label>
-                    <input
-                        type="text"
+        <Container maxWidth="xs">
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography component="h1" variant="h5">
+                    Register
+                </Typography>
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
                         id="username"
+                        label="Username"
+                        name="username"
+                        autoFocus
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        required
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
                         id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
                         type="password"
                         id="password"
+                        autoComplete="new-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirm Password:</label>
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit">Register</button>
-            </form>
-        </div>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Register
+                    </Button>
+                </Box>
+            </Box>
+        </Container>
     );
 }
 

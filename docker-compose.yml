@@ -17,5 +17,8 @@ services:
       - "5000:5000"
     volumes:
       - ./server:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # For Docker on Linux to access host machine prevent could not translate host.docker.internal              │
     environment:
       - DATABASE_URL=postgresql://elisha:karanja@host.docker.internal/ticketi
+      - FLASK_ENV=production  
