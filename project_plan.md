@@ -131,7 +131,7 @@ This roadmap breaks down the project into three phases, each with a clear set of
     *   **Task:** Implement Advanced Search: Enhance the event search functionality with more filters (e.g., by date range, category).
     *   **Task:** User Profile Pictures: Add the ability for users to upload profile pictures.
 *   **Frontend:**
-    *   **Task:** Implement Frontend Pagination: Add UI controls to navigate through the paginated event and ticket lists.
+    *   **Task:** Implement Frontend Pagination: Add UI controls to navigate through the paginated event and ticket lists. - **DONE**
     *   **Task:** Build out User Profiles: Enhance the user profile page to display more information (e.g., events created, tickets purchased).
     *   **Task:** Implement Event Categories: Add a category filter to the event list page.
 

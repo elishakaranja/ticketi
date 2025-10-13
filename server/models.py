@@ -53,6 +53,7 @@ class Event(db.Model):
     capacity = db.Column(db.Integer, nullable = False)  # Total available tickets
     tickets_sold = db.Column(db.Integer, default=0)  # Counter for sold tickets
     status = db.Column(db.String, default='upcoming')  # 'upcoming', 'ongoing', 'completed'
+    category = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -73,6 +74,7 @@ class Event(db.Model):
             'capacity': self.capacity,
             'tickets_sold': self.tickets_sold,
             'status': self.status,
+            'category': self.category,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'user_id': self.user_id
         }

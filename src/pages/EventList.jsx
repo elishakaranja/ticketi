@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import EventCard from '../components/EventCard';
 import api from '../api/api';
-import { Container, Grid, Typography, CircularProgress, Alert, Pagination } from '@mui/material';
+import { Container, Grid, Typography, CircularProgress, Alert, Pagination, Box } from '@mui/material';
 
 function EventList() {
     const [events, setEvents] = useState([]);
