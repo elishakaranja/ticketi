@@ -3,7 +3,7 @@ load_dotenv()
 
 import os
 import logging
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -25,7 +25,8 @@ def create_app():
     elif env == 'testing':
         app.config.from_object(TestingConfig)
     else:
-        app.config.from_object(DevelopmentConfig)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+    app.config['UPLOAD_FOLDER'] = 'uploads'
 
     # Configure logging
     if not app.debug:
@@ -54,6 +55,10 @@ def create_app():
     def internal_error(error):
         app.logger.error(f'Internal server error: {error}')
         return jsonify({'error': 'Internal server error'}), 500
+
+    @app.route('/uploads/<filename>')#for uploading profile pics
+    def uploaded_file(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
     return app
 

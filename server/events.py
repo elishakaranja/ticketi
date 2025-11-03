@@ -20,6 +20,9 @@ def get_events():
     per_page = request.args.get('per_page', 10, type=int)
     search = request.args.get('search', '')
     status = request.args.get('status', 'upcoming')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    category = request.args.get('category')
     
     query = Event.query
     
@@ -34,6 +37,15 @@ def get_events():
     
     if status:
         query = query.filter(Event.status == status)
+
+    if start_date:
+        query = query.filter(Event.date >= datetime.strptime(start_date, '%Y-%m-%d'))
+
+    if end_date:
+        query = query.filter(Event.date <= datetime.strptime(end_date, '%Y-%m-%d'))
+
+    if category:
+        query = query.filter(Event.category == category)
     
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
     events = pagination.items

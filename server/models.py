@@ -11,6 +11,7 @@ class User(db.Model):
     username = db.Column(db.String(20), nullable = False)
     email = db.Column(db.String(100), unique = True, nullable = False)
     password_hash = db.Column(db.String(200), nullable = False)  # For storing hashed passwords
+    profile_picture = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -35,6 +36,7 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'profile_picture': self.profile_picture,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 

@@ -128,8 +128,8 @@ This roadmap breaks down the project into three phases, each with a clear set of
         1.  **Update the `get_events` endpoint:** We will modify the `get_events` endpoint in `server/events.py` to accept two new query parameters: `page` and `per_page`.
         2.  **Use Flask-SQLAlchemy's `paginate()` method:** Instead of using `.all()`, we will use the built-in `.paginate()` method from Flask-SQLAlchemy.
         3.  **Update the JSON response:** We will update the JSON response to include pagination information (total pages, next page, etc.).
-    *   **Task:** Implement Advanced Search: Enhance the event search functionality with more filters (e.g., by date range, category).
-    *   **Task:** User Profile Pictures: Add the ability for users to upload profile pictures.
+    *   **Task:** Implement Advanced Search: Enhance the event search functionality with more filters (e.g., by date range, category). - **DONE** - **DONE**
+    *   **Task:** User Profile Pictures: Add the ability for users to upload profile pictures. - **DONE**
 *   **Frontend:**
     *   **Task:** Implement Frontend Pagination: Add UI controls to navigate through the paginated event and ticket lists. - **DONE**
     *   **Task:** Build out User Profiles: Enhance the user profile page to display more information (e.g., events created, tickets purchased).

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { Container, Box, Typography, TextField, Button, Alert, Avatar, CircularProgress } from '@mui/material';
 
 function Profile() {
   const [formData, setFormData] = useState({ username: "", email: "" });
@@ -9,6 +10,7 @@ function Profile() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const [file, setFile] = useState(null);
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
@@ -32,6 +34,30 @@ function Profile() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
+  function handleFileChange(e) {
+    setFile(e.target.files[0]);
+  }
+
+  async function handlePictureUpload(e) {
+    e.preventDefault();
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    try {
+      const response = await api.post("/auth/profile/picture", uploadData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setUser(response.data);
+      setSuccess("Profile picture updated successfully!");
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to upload profile picture");
+    }
+  }
+
   function handleEdit(e) {
     e.preventDefault();
     setError(null);
@@ -46,51 +72,63 @@ function Profile() {
   }
 
   if (loading) return (
-    <div>Loading...</div>
+    <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <CircularProgress />
+    </Container>
   );
 
   return (
-    <div>
-      <h1>User Profile</h1>
-      {error && <p>{error}</p>}
-      {success && <p>{success}</p>}
-      <form onSubmit={handleEdit}>
-        <div>
-          <label>
-            Username:
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              disabled={!editMode}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Email:
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={!editMode}
-              required
-            />
-          </label>
-        </div>
-        {editMode ? (
-          <div>
-            <button type="submit">Save</button>
-            <button type="button" onClick={() => setEditMode(false)}>Cancel</button>
-          </div>
-        ) : (
-          <button type="button" onClick={() => setEditMode(true)}>Edit</button>
-        )}
-      </form>
-    </div>
+    <Container maxWidth="sm">
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          User Profile
+        </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
+        {success && <Alert severity="success">{success}</Alert>}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Avatar src={user.profile_picture ? `/uploads/${user.profile_picture}` : ''} sx={{ width: 80, height: 80, mr: 2 }} />
+          <form onSubmit={handlePictureUpload}>
+            <Button variant="contained" component="label">
+              Upload Picture
+              <input type="file" hidden onChange={handleFileChange} />
+            </Button>
+            <Button type="submit" variant="contained" color="primary" sx={{ ml: 1 }}>Save Picture</Button>
+          </form>
+        </Box>
+        <form onSubmit={handleEdit}>
+          <TextField
+            margin="normal"
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            disabled={!editMode}
+            required
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            disabled={!editMode}
+            required
+          />
+          {editMode ? (
+            <Box sx={{ mt: 2 }}>
+              <Button type="submit" variant="contained">Save</Button>
+              <Button onClick={() => setEditMode(false)} sx={{ ml: 1 }}>Cancel</Button>
+            </Box>
+          ) : (
+            <Button onClick={() => setEditMode(true)} variant="contained">Edit</Button>
+          )}
+        </form>
+      </Box>
+    </Container>
   );
 }
 
