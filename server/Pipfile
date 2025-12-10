@@ -13,6 +13,7 @@ psycopg2-binary = "*"
 sqlalchemy = "*"
 flask-cors = "*"
 python-dotenv = "*"
+requests = "*"
 
 [dev-packages]
 pytest = "*"
