@@ -37,8 +37,10 @@ const Header = () => {
         <Box sx={{ flexGrow: 0 }}>
           {user ? (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar sx={{ mr: 2 }}>{user.username.charAt(0).toUpperCase()}</Avatar>
-              <Typography sx={{ mr: 2 }}>{user.username}</Typography>
+              <Button component={Link} to="/profile" sx={{ color: 'white', textDecoration: 'none' }}>
+                <Avatar sx={{ mr: 2 }}>{user.username.charAt(0).toUpperCase()}</Avatar>
+                <Typography sx={{ mr: 2 }}>{user.username}</Typography>
+              </Button>
               <Button color="inherit" onClick={logout}>Logout</Button>
             </Box>
           ) : (

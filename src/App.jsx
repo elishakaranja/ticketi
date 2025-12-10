@@ -10,6 +10,7 @@ import CreateEvent from "./pages/CreateEvent";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 import MyTickets from "./pages/MyTickets";
+import EventsNearMe from "./pages/EventsNearMe";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
                 <MyTickets />
               </ProtectedRoute>
             } />
+            <Route path="/events-near-me" element={<EventsNearMe />} />
           </Routes>
         </Layout>
       </Router>

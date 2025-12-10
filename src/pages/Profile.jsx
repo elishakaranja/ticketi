@@ -86,9 +86,10 @@ function Profile() {
         {error && <Alert severity="error">{error}</Alert>}
         {success && <Alert severity="success">{success}</Alert>}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Avatar src={user.profile_picture ? `/uploads/${user.profile_picture}` : ''} sx={{ width: 80, height: 80, mr: 2 }} />
+          <Avatar src={user.profile_picture ? `${api.defaults.baseURL}/uploads/${user.profile_picture}` : ''} sx={{ width: 80, height: 80, mr: 2 }} />
           <form onSubmit={handlePictureUpload}>
             <Button variant="contained" component="label">
+              
               Upload Picture
               <input type="file" hidden onChange={handleFileChange} />
             </Button>

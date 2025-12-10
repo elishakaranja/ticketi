@@ -13,6 +13,7 @@ from server.models import db, Event, User # Imported for Flask-Migrate
 from server.auth import auth_bp
 from server.events import events_bp
 from server.tickets import tickets_bp
+from server.eventbrite import eventbrite_bp
 
 from server.config import DevelopmentConfig, ProductionConfig, TestingConfig
 
@@ -25,8 +26,11 @@ def create_app():
     elif env == 'testing':
         app.config.from_object(TestingConfig)
     else:
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
-    app.config['UPLOAD_FOLDER'] = 'uploads'
+        app.config.from_object(DevelopmentConfig)
+    
+
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'uploads')
 
     # Configure logging
     if not app.debug:
@@ -34,7 +38,7 @@ def create_app():
         log_handler.setLevel(logging.ERROR)
         app.logger.addHandler(log_handler)
     
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE"], "allow_headers": ["Content-Type", "Authorization"]}})
 
     # Initialize extensions
     db.init_app(app)
@@ -45,6 +49,7 @@ def create_app():
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(events_bp, url_prefix='/events')
     app.register_blueprint(tickets_bp, url_prefix='/tickets')
+    app.register_blueprint(eventbrite_bp, url_prefix='/eventbrite')
 
     # Error handlers
     @app.errorhandler(404)

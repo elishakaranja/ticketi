@@ -75,7 +75,7 @@ function MyTickets() {
                         <Typography variant="h6">{ticket.event.name}</Typography>
                         <Typography>Date: {ticket.event.date}</Typography>
                         <Typography>Location: {ticket.event.location}</Typography>
-                        <Typography>Purchase Price: ${ticket.price}</Typography>
+                        <Typography>Purchase Price: KSH {ticket.price.toLocaleString()}</Typography>
                         <Typography>Status: {ticket.status}</Typography>
                         {ticket.status === "sold" && (
                             <Box mt={2}>
@@ -96,7 +96,7 @@ function MyTickets() {
                         )}
                         {ticket.status === "resale" && (
                             <Box mt={2}>
-                                <Typography>Resale Price: ${ticket.resale_price}</Typography>
+                                <Typography>Resale Price: KSH {ticket.resale_price.toLocaleString()}</Typography>
                                 <Button onClick={() => handleCancelResale(ticket.ticket_id)} variant="outlined" sx={{ ml: 1 }}>
                                     Cancel Resale
                                 </Button>
