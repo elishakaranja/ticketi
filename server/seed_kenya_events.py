@@ -1,4 +1,4 @@
-"""
+git commit -m "back"""
 Enhanced Seed Data Generator for Ticketi
 Creates 100+ authentic, realistic Kenyan events with proper images and descriptions
 """
