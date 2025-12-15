@@ -1,0 +1,12 @@
+# Nixpacks configuration for Railway backend deployment
+[phases.setup]
+nixPkgs = ["python38", "postgresql"]
+
+[phases.install]
+cmds = ["pip install -r server/requirements.txt"]
+
+[phases.build]
+cmds = ["cd server && flask db upgrade"]
+
+[start]
+cmd = "cd server && gunicorn app:app --bind 0.0.0.0:$PORT"

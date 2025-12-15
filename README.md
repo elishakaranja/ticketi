@@ -63,7 +63,21 @@ Whether you’re a host or an attendee, Ticketi empowers users to engage with ev
 
 ## 📦 Getting Started
 
+### Local Development
+
 > Note: Instructions for running locally with Docker will be added later.
+
+### Deployment
+
+Ticketi is configured for easy deployment on **Koyeb** (**NO CREDIT CARD REQUIRED**). See [`KOYEB_DEPLOYMENT.md`](./KOYEB_DEPLOYMENT.md) for detailed deployment instructions.
+
+**Quick Deploy to Koyeb (Free):**
+1. Sign up at [Koyeb.com](https://koyeb.com) with GitHub (no credit card!)
+2. Create PostgreSQL database
+3. Deploy backend and frontend services from GitHub
+4. Follow the step-by-step guide in `KOYEB_DEPLOYMENT.md`
+
+✅ **Completely FREE** - No credit card needed!
 
 ---
 

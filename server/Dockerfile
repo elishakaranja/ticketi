@@ -2,12 +2,21 @@ FROM python:3.8-slim
 
 WORKDIR /app
 
-COPY Pipfile Pipfile.lock /app/
+# Install system dependencies for PostgreSQL
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app/
+# Copy application code
+COPY . .
 
-EXPOSE 5000
+# Expose port
+EXPOSE 8000
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Run migrations and start server
+CMD flask db upgrade && gunicorn app:app --bind 0.0.0.0:8000

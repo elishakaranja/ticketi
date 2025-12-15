@@ -133,3 +133,4 @@ def get_my_events():
     current_user_id = get_jwt_identity()
     events = Event.query.filter_by(user_id=current_user_id).all()
     return jsonify([event.to_dict() for event in events]), 200 
+
