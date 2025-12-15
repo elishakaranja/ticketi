@@ -34,7 +34,9 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', response.data.access_token);
             return { success: true };
         } catch (error) {
-            return { success: false, error: error.response?.data?.error || 'Login failed' };
+            const errorMsg = error.response?.data?.error;
+            const finalError = typeof errorMsg === 'string' ? errorMsg : 'Login failed';
+            return { success: false, error: finalError };
         }
     };
 
@@ -46,7 +48,9 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', response.data.access_token);
             return { success: true };
         } catch (error) {
-            return { success: false, error: error.response?.data?.error || 'Registration failed' };
+            const errorMsg = error.response?.data?.error;
+            const finalError = typeof errorMsg === 'string' ? errorMsg : 'Registration failed';
+            return { success: false, error: finalError };
         }
     };
 
